@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
+import SelectCharacter from "./Components/SelectCharacter"
 
 // Constants
 const TWITTER_HANDLE = '_buildspace';
@@ -11,6 +12,8 @@ const App = () => {
    * state variable that we use to store our user's public wallet
    */
   const [currentAccount, setCurrentAccount] = useState(null)
+
+  const [characterNFT, setCharacterNFT] = useState(null)
   // creating a new action that will run the component load
   // Actions
   const checkIfWalletIsConnected = async () => {
@@ -70,6 +73,26 @@ const App = () => {
       console.log(error);
     }
   };
+  const renderContent = () => {
+    if (!currentAccount) {
+      return (
+        <div className="connect-wallet-container">
+        <img
+          src="https://64.media.tumblr.com/tumblr_mbia5vdmRd1r1mkubo1_500.gifv"
+          alt="Monty Python Gif"
+        />
+        <button
+          className="cta-button connect-wallet-button"
+          onClick={connectWalletAction}
+        >
+          Connect Wallet To Get Started
+        </button>
+      </div>
+      )
+    } else if (currentAccount && !characterNFT) {
+      return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+    }
+  }
 
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -81,15 +104,8 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">⚔️ Metaverse Slayer ⚔️</p>
           <p className="sub-text">Team up to protect the Metaverse!</p>
-          <div className="connect-wallet-container">
-            <img
-              src="https://64.media.tumblr.com/tumblr_mbia5vdmRd1r1mkubo1_500.gifv"
-              alt="Monty Python Gif"
-            />
-            {/*Button that we will use to trigger wallet connect 
-            using the onClick event to call the method*/}
-            <button className="cta-button connect-wallet-button" onClick={connectWalletAction}>Connect Wallet to Get Started</button>
-          </div>
+          {/*Re*/}
+          {renderContent()}
         </div>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
