@@ -13,8 +13,10 @@ const App = () => {
   const [currentAccount, setCurrentAccount] = useState(null)
   // creating a new action that will run the component load
   // Actions
-  const checkIfWalletIsConnected = () => {
+  const checkIfWalletIsConnected = async () => {
+    
     // First, make sure we have access to the window.ethereum
+    try {
     const {ethereum} = window;
 
     if (!ethereum) {
@@ -22,6 +24,50 @@ const App = () => {
       return;
     } else {
       console.log('We have the ethereum object', ethereum);
+
+      /**
+       * Check if we are authorised to access the user's wallet
+       */
+      const accounts =  await ethereum.request({ method: 'eth_accounts'})
+
+      // User can have multiple authorised user accounts, we grab the first one
+
+      if (accounts.length !== 0) {
+        const account =  accounts[0]
+        console.log('Found an authorised account: ', account);
+        setCurrentAccount(account);
+      } else {
+        console.log('No authorised account found')
+      }
+    }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const connectWalletAction = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert('Get MetaMask!');
+        return;
+      }
+
+      /*
+       * Fancy method to request access to account.
+       */
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+
+      /*
+       * Boom! This should print out public address once we authorize Metamask.
+       */
+      console.log('Connected', accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -40,6 +86,9 @@ const App = () => {
               src="https://64.media.tumblr.com/tumblr_mbia5vdmRd1r1mkubo1_500.gifv"
               alt="Monty Python Gif"
             />
+            {/*Button that we will use to trigger wallet connect 
+            using the onClick event to call the method*/}
+            <button className="cta-button connect-wallet-button" onClick={connectWalletAction}>Connect Wallet to Get Started</button>
           </div>
         </div>
         <div className="footer-container">
